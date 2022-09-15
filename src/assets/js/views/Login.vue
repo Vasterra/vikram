@@ -13,9 +13,9 @@
                                 <input type="text" placeholder="Username" class="form-control form-input" :class="[{error_input: isAuthError}]" v-model="username">
                             </div>
                             <div class="form-group mb-3 relative-block">
-                                <button class="show-password-btn" @click="togglePasswordType">
+                                <span class="show-password-btn" @click="togglePasswordType">
                                     <img :src="passwordIcon" alt="">
-                                </button>
+                                </span>
                                 <input :type="passwordType" placeholder="Password" class="form-control form-input" :class="[{error_input: isAuthError}]" v-model="password">
                             </div>
                             <div v-if="isAuthError" class="error-message d-flex align-items-center">
@@ -73,7 +73,8 @@ export default {
             }
 
             localStorage.setItem('user_token', 'test_token')
-            this.$router.push({name: 'Rfq'});
+            this.$store.dispatch('setAuthorized')
+            this.$router.push({name: 'Home'});
         },
         validate() {
             return this.username && this.password && this.username == this.authName && this.password == this.authPassword;

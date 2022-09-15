@@ -8,7 +8,7 @@
                 <div class="search-option" v-for="searchOption in searchOptions" :key="searchOption.id" @click="selectSearchOption(searchOption.text)">{{ searchOption.text }}</div>
             </div>
         </div>
-        <button class="btn search-btn">Get Started</button>
+        <button class="btn search-btn" @click="toQuestions">Get Started</button>
     </div>
 </template>
 
@@ -43,6 +43,9 @@ export default {
         selectSearchOption(optionValue) {
             this.searchValue = optionValue;
             this.showSearchOptions = false;
+        },
+        toQuestions() {
+            this.$router.push({name: 'Rfq'})
         }
     }
 }

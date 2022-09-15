@@ -18,7 +18,10 @@ export default [
     {
         path: '/',
         name: 'Home',
-        component: Home
+        component: Home,
+        meta: {
+            middleware: [guest],
+        },
     },
     {
         path: '/rfq',

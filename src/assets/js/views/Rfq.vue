@@ -6,7 +6,7 @@
             <div class="container">
                 <div class="row d-flex justify-content-center">
                     <div class="col-md-8">
-                        <div class="poll-content" v-if="step == 1">
+                        <!-- <div class="poll-content" v-if="step == 1">
                             <h3 class="poll-title">Do you have a manufacturer name or part number?</h3>
                             <div class="poll-actions d-flex justify-content-center">
                                 <button class="poll-btn btn-transparent mar-r-24" @click="hasManufacturerName = false; stepNext()">No</button>
@@ -18,8 +18,8 @@
                             <div class="poll-actions d-flex justify-content-center">
                                 <input type="text" placeholder="Manufacturer name or part number" v-model="manufacturerName" class="poll-input">
                             </div>
-                        </div>
-                        <div class="poll-content" v-if="step == 3">
+                        </div> -->
+                        <div class="poll-content" v-if="step == 1">
                             <h3 class="poll-title">Select measuring temperature range or probe type</h3>
                             <div class="poll-actions d-flex justify-content-center">
                                 <div class="poll-questions-block">
@@ -59,13 +59,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="poll-content" v-if="step == 4">
+                        <div class="poll-content" v-if="step == 2">
                             <h3 class="poll-title">Enter Thermocouple Type if available or skip</h3>
                             <div class="poll-actions d-flex justify-content-center">
-                                <input type="text" placeholder="Manufacturer name or part number" v-model="thermocoupleType" class="poll-input">
+                                <input type="text" placeholder="Thermocouple Type" v-model="thermocoupleType" class="poll-input">
                             </div>
                         </div>
-                        <div class="poll-content" v-if="step == 5">
+                        <div class="poll-content" v-if="step == 3">
                             <h3 class="poll-title">Output Type</h3>
                             <div class="poll-actions d-flex justify-content-center">
                                 <div class="poll-questions-block">
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="poll-content" v-if="step == 6">
+                        <div class="poll-content" v-if="step == 4">
                             <h3 class="poll-title">Display Size Requirement</h3>
                             <div class="poll-actions d-flex justify-content-center">
                                 <div class="poll-questions-block">
@@ -153,6 +153,43 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="poll-content" v-if="step == 5">
+                            <h3 class="poll-title">Other requirements</h3>
+                            <div class="poll-actions">
+                                <textarea class="poll-textarea" placeholder="Enter text"></textarea>
+                                <div class="poll-images-block" v-if="uploadedImages.length">
+                                    <div class="uploaded-image" v-for="image in uploadedImages" :key="image.src" :style="'background-image: url('+ image.src +')'">
+                                        <div class="uploaded-image-wrap">
+                                            <button class="delete-image" @click="deleteUploadedImage(image.src)">
+                                                <img :src="closeIconWhite" alt="">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="poll-files-block" v-if="uploadedFiles.length">
+                                    <div class="uploaded-file" v-for="file in uploadedFiles" :key="file.src">
+                                        <img :src="uploadedFileIcon" alt="">
+                                        <div class="file-info">
+                                            <span class="file-name">{{ file.name }}</span>
+                                            <span class="file-size">{{ file.size }} MB</span>
+                                        </div>
+                                        <button class="delete-file" @click="deleteUploadedFile(file.src)">
+                                            <img :src="closeIconGray" alt="">
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="poll-uploads-block">
+                                    <label for="imageUpload" class="image-upload">
+                                        <img :src="galleryAddIcon" alt="">
+                                        <input type="file" id="imageUpload" @change="uploadImage">
+                                    </label>
+                                    <label for="fileUpload" class="file-upload">
+                                        <img :src="folderAddIcon" alt="">
+                                        <input type="file" id="fileUpload" @change="uploadFile">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,7 +201,7 @@
                                 <img :src="prevIcon" class="mar-r-10" alt="">
                                 <span>Back</span>
                             </button>
-                            <button class="poll-btn poll-next" v-if="step != 1" @click="stepNext">
+                            <button class="poll-btn poll-next" @click="stepNext">
                                 <span class="mar-r-10">Next</span>
                                 <img :src="nextIcon" alt="">
                             </button>
@@ -186,6 +223,9 @@ import PrevIcon from 'Images/prev_icon.png';
 import NextIcon from 'Images/next_icon.png';
 import FolderAddIcon from 'Images/folder-add_icon.png';
 import GalleryAddIcon from 'Images/gallery-add_icon.png';
+import UploadedFileIcon from 'Images/uploaded_file.png';
+import CloseIconWhite from 'Images/close_icon_white.png';
+import CloseIconGray from 'Images/close_icon_gray.png';
 
 export default {
     name: 'Rfq',
@@ -197,9 +237,12 @@ export default {
             nextIcon: NextIcon,
             folderAddIcon: FolderAddIcon,
             galleryAddIcon: GalleryAddIcon,
+            uploadedFileIcon: UploadedFileIcon,
+            closeIconWhite: CloseIconWhite,
+            closeIconGray: CloseIconGray,
 
             step: 1,
-            stepsCount: 6,
+            stepsCount: 5,
             percent: 0,
             hasManufacturerName: false,
             manufacturerName: null,
@@ -211,10 +254,12 @@ export default {
             otherReqsImages: [],
             otherReqsFiles: [],
             isOtherOptionSelected: false,
+            uploadedFiles: [],
+            uploadedImages: [],
         }
     },
     mounted() {
-        //
+        this.setProgress();
     },
     methods: {
         stepNext() {
@@ -223,7 +268,7 @@ export default {
                 return false;
             }
 
-            if (this.hasManufacturerName && this.step == 1) {
+            if (this.measuring != 'Thermocouple' && this.step == 1) {
                 this.step += 2;
                 this.setProgress();
 
@@ -239,7 +284,7 @@ export default {
                 return false;
             }
 
-            if (this.hasManufacturerName && this.step == 3) {
+            if (this.measuring != 'Thermocouple' && this.step == 3) {
                 this.step -= 2;
                 this.setProgress();
 
@@ -262,6 +307,41 @@ export default {
             this[propertyName] = value;
 
             this.isOtherOptionSelected = value == 'Other';
+        },
+        uploadImage(e) {
+            let image = this.upload(e);
+
+            if (image) {
+                this.uploadedImages.push(image);
+            }
+        },
+        uploadFile(e) {
+            let file = this.upload(e);
+
+            if (file) {
+                this.uploadedFiles.push(file);
+            }
+        },
+        upload(uploadEvent) {
+            if (uploadEvent.target.files && uploadEvent.target.files.length) {
+                let uploadedFile = uploadEvent.target.files[0];
+
+                let newFile = {
+                    name: uploadedFile.name,
+                    size: (uploadedFile.size / 1024 / 1024).toFixed(1),
+                    src: URL.createObjectURL(uploadedFile)
+                };
+
+                return newFile;
+            }
+
+            return false;
+        },
+        deleteUploadedImage(src) {
+            this.uploadedImages = this.uploadedImages.filter(item => item.src != src);
+        },
+        deleteUploadedFile(src) {
+            this.uploadedFiles = this.uploadedFiles.filter(item => item.src != src)
         }
 
     }
@@ -393,6 +473,118 @@ export default {
                         border-radius: 50%;
                         background-color: #5A59D7;
                         display: block;
+                    }
+                }
+            }
+        }
+
+        .poll-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #C8CADA;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .poll-textarea:focus {
+            outline: none;
+        }
+
+        .poll-uploads-block {
+            display: flex;
+
+            label {
+                margin-right: 20px;
+                cursor: pointer;
+
+                input {
+                    display: none;
+                }
+            }
+        }
+
+        .poll-images-block {
+            display: flex;
+            // justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+
+            .uploaded-image {
+                width: 32%;
+                min-width: 177px;
+                height: 100px;
+                background-size: cover;
+                background-position: center;
+                background-color: #C8CADA;
+                margin-right: 8px;
+
+                .uploaded-image-wrap {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.3);
+
+                    .delete-image {
+                        position: absolute;
+                        right: 5px;
+                        top: 5px;
+                        background-color: transparent;
+                        border: none;
+                        outline: none;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+
+        .poll-files-block {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #EAEBF2;
+                padding-bottom: 25px;
+                margin-bottom: 25px;
+
+            .uploaded-file {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                margin-right: 8px;
+
+                img {
+                    margin-right: 10px;
+                }
+
+                .file-info {
+                    display: flex;
+                    flex-direction: column;
+                    margin-right: 17px;
+
+                    .file-name {
+                        font-family: 'Open Sans', sans-serif;
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #000535;
+                    }
+
+                    .file-size {
+                        font-family: 'Open Sans', sans-serif;
+                        font-size: 12px;
+                        font-weight: 400;
+                        color: #000535;
+                    }
+                }
+
+                .delete-file {
+                    background-color: transparent;
+                    border: none;
+                    outline: none;
+                    cursor: pointer;
+
+                    img {
+                        margin-right: 0;
                     }
                 }
             }

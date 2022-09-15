@@ -67,13 +67,11 @@ export default {
             this.sliderSettings.reviewsWrapper = document.querySelector('.reviews-wrapper');
             this.sliderSettings.reviewBlocks = document.querySelectorAll('.review-block');
             this.sliderSettings.reviewsWrapperWidth = 0;
-            console.log(this.sliderSettings.reviewBlocks)
 
             this.sliderSettings.reviewBlocks.forEach(reviewBlock => {
                 reviewBlock.style.width = this.sliderSettings.reviewsSlider.clientWidth + 'px';
                 this.sliderSettings.reviewsWrapperWidth += this.sliderSettings.reviewsSlider.clientWidth;
             })
-            console.log(this.sliderSettings.reviewsWrapperWidth)
 
             this.sliderSettings.reviewsWrapper.style.width = this.sliderSettings.reviewsWrapperWidth + 'px';
         },

@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-3">
                     <div class="d-flex align-items-center justify-content-end">
-                        <a href="" v-if="!$store.getters.isAuthorized" @click.prevent="$router.push({name: 'Login'})" class="account-link">Sign in</a>
+                        <a href="" v-if="!isAuthorized" @click.prevent="$router.push({name: 'Login'})" class="account-link">Sign in</a>
                         <a href="" v-else class="account-link">My Account</a>
                     </div>
                 </div>
@@ -36,6 +36,14 @@ export default {
     data() {
         return {
 
+        }
+    },
+    mounted() {
+        console.log(this.isAuthorized)
+    },
+    computed: {
+        isAuthorized() {
+            return this.$store.getters.isAuthorized;
         }
     }
 }
