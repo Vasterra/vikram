@@ -30,6 +30,12 @@
 // Import images
 import ArrowLeftIcon from 'Images/arrow-left.png';
 import ArrowRightIcon from 'Images/arrow-right.png';
+import ReviewImage1 from 'Images/review1.png';
+import ReviewImage2 from 'Images/review2.png';
+import ReviewImage3 from 'Images/review3.png';
+import ReviewImage4 from 'Images/review4.png';
+import ReviewImage5 from 'Images/review5.png';
+import ReviewImage6 from 'Images/review6.png';
 
 import Review from 'Components/Review.vue';
 import RequestHelper from 'Helpers/RequestHelper.js';
