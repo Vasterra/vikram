@@ -1,5 +1,5 @@
 <template>
-    <section class="reviews-section">
+    <section class="reviews-section" v-if="reviews.length">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -32,7 +32,7 @@ import ArrowLeftIcon from 'Images/arrow-left.png';
 import ArrowRightIcon from 'Images/arrow-right.png';
 
 import Review from 'Components/Review.vue';
-import staticReviews from 'Data/reviews.js';
+import RequestHelper from 'Helpers/RequestHelper.js';
 
 export default {
     name: 'ReviewSlider',
@@ -49,17 +49,13 @@ export default {
                 reviewsWrapperWidth: 0,
                 slideMove: 0
             },
-            staticReviews: staticReviews,
             reviews: [],
             elementsPerBlock: 6,
+            requestHelper: RequestHelper
         }
     },
     mounted() {
-        this.setElementsPerBlock();
-        this.groupReviews();
-        setTimeout(() => {
-            this.setSliderSettings();
-        }, 500)
+        this.getReviews()
     },
     methods: {
         setSliderSettings() {
@@ -96,7 +92,7 @@ export default {
             let group = [];
             let iteration = 1;
 
-            this.staticReviews.forEach(review => {
+            this.reviews.forEach(review => {
                 group.push(review);
 
                 if (iteration%this.elementsPerBlock == 0) {
@@ -115,6 +111,21 @@ export default {
             } else if (window.innerWidth <= 991) {
                 this.elementsPerBlock = 2;
             }
+        },
+        getReviews() {
+            this.requestHelper.get('reviews').then(response => {
+                if (response.data) {
+                    this.reviews = response.data;
+                    this.setElementsPerBlock();
+                    this.groupReviews();
+                    
+                    setTimeout(() => {
+                        this.setSliderSettings();
+                    }, 1000)
+                }
+            }).catch(response => {
+                console.log(response)
+            })
         }
     }
 }

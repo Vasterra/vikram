@@ -2,10 +2,10 @@
     <div class="main-search">
         <div class="search-content">
             <img :src="searchIcon" class="search-icon" alt="">
-            <input type="text" class="search-input" placeholder="Search..." v-model="searchValue" @focus="showSearchOptions = true" @keyup.esc="showSearchOptions = false">
+            <input type="text" class="search-input" placeholder="Search..." v-model="searchValue" @focus="$store.dispatch('showSearchOptions')" @keyup.esc="showSearchOptions = false">
             <img :src="dropdownIcon" alt="">
             <div class="search-options" v-if="showSearchOptions">
-                <div class="search-option" v-for="searchOption in searchOptions" :key="searchOption.id" @click="selectSearchOption(searchOption.text)">{{ searchOption.text }}</div>
+                <div class="search-option" v-for="searchOption in searchOptions" :key="searchOption.id" @click="selectSearchOption(searchOption.name)">{{ searchOption.name }}</div>
             </div>
         </div>
         <button class="btn search-btn" @click="toQuestions">Get Started</button>
@@ -17,6 +17,8 @@
 import SearchIcon from 'Images/search-normal.png';
 import DropdownIcon from 'Images/arrow-down.png';
 
+import RequestHelper from 'Helpers/RequestHelper';
+
 export default {
     name: 'MainSearch',
     data() {
@@ -27,25 +29,34 @@ export default {
 
             showSearchOptions: false,
             searchValue: null,
-            searchOptions: [
-                {id: 1, text: 'Temperature controller'},
-                {id: 2, text: 'Lorem ipsum'},
-                {id: 3, text: 'Lorem ipsum is simply'},
-                {id: 4, text: 'Lorem'},
-                {id: 5, text: 'Lorem ipsum'},
-                {id: 6, text: 'Lorem ipsum is simply'},
-                {id: 7, text: 'Lorem'},
-                {id: 8, text: 'Lorem ipsum is simply'},
-            ]
+            requestHelper: RequestHelper,
+            searchOptions: []
         }
+    },
+    mounted() {
+        this.getCategories()
     },
     methods: {
         selectSearchOption(optionValue) {
             this.searchValue = optionValue;
-            this.showSearchOptions = false;
+            this.$store.dispatch('hideSearchOptions')
         },
         toQuestions() {
             this.$router.push({name: 'Rfq'})
+        },
+        getCategories() {
+            this.requestHelper.get('categories').then(response => {
+                if (response.data) {
+                    this.searchOptions = response.data;
+                }
+            }).catch(response => {
+                console.log(response)
+            }) 
+        }
+    },
+    computed: {
+        showSearchOptions() {
+            return this.$store.getters.showSearchOptions;
         }
     }
 }

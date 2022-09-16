@@ -44,7 +44,8 @@
 <script>
 
 import Header from 'Components/Header.vue';
-import resultsData from 'Data/result.js';
+import RequestHelper from 'Helpers/RequestHelper.js'
+
 
 // Import images
 import PhoneIcon from 'Images/phone_icon.png';
@@ -63,7 +64,22 @@ export default {
             smsIcon: SmsIcon,
             routingIcon: RoutingIcon,
 
-            results: resultsData
+            requestHelper: RequestHelper,
+            results: []
+        }
+    },
+    mounted() {
+        this.getResult()
+    },
+    methods: {
+        getResult() {
+            this.requestHelper.get('result').then(response => {
+                if (response.data) {
+                    this.results = response.data;
+                }
+            }).catch(response => {
+                console.log(response)
+            })
         }
     }
 }

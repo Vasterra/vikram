@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header />
-        <section class="main-slide-block" :style="'background-image: url(' + mainImage + ')'">
+        <section class="main-slide-block" :style="'background-image: url(' + mainImage + ')'" @click="hideSearchOptions">
             <div class="container">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-9">
@@ -150,6 +150,19 @@ export default {
             scalesImage: ScalesImage,
             handshakeImage: HandshakeImage,
             lineImage: LineImage,
+        }
+    },
+    methods: {
+        hideSearchOptions(e) {
+            let target = e.target;
+            let hasWrongTargetClass = target.classList.contains('main-search') || target.classList.contains('search-content') 
+                || target.classList.contains('search-input') || target.classList.contains('search-icon') 
+                || target.classList.contains('search-options') || target.classList.contains('search-option');
+                
+
+            if (!hasWrongTargetClass) {
+                this.$store.dispatch('hideSearchOptions')
+            }
         }
     }
 }

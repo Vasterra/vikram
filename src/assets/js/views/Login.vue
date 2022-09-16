@@ -20,10 +20,11 @@
                             </div>
                             <div v-if="isAuthError" class="error-message d-flex align-items-center">
                                 <img :src="errorIcon" alt="">
-                                <span>Invalid username or password</span>
+                                <span>{{ errorMessage }}</span>
                             </div>
                             <div class="form-group mar-t-32">
-                                <button class="btn login-btn" @click="login">Log In</button>
+                                <button class="btn login-btn" disabled v-if="isLoading">Log In</button>
+                                <button class="btn login-btn" v-else @click="login">Log In</button>
                             </div>
                         </div>
                     </div>
@@ -40,6 +41,8 @@ import ShowPasswordIcon from 'Images/show_passwd.png';
 import HidePasswordIcon from 'Images/hide_passwd.png';
 import ShieldCrossIcon from 'Images/shield-cross.png';
 
+import RequestHelper from 'Helpers/RequestHelper.js';
+
 export default {
     name: 'Login',
     components: {MainLogo},
@@ -51,8 +54,9 @@ export default {
             isAuthError: false,
             username: null,
             password: null,
-            authName: 'admin',
-            authPassword: 'admin'
+            isLoading: false,
+            errorMessage: null,
+            request: RequestHelper
         }
     },
     methods: {
@@ -66,18 +70,36 @@ export default {
             }
         },
         login() {
+            this.isLoading = true;
+
             if (!this.validate()) {
                 this.isAuthError = true;
+                this.errorMessage = 'All fields are required!';
+                this.isLoading = false;
 
                 return false;
             }
 
-            localStorage.setItem('user_token', 'test_token')
-            this.$store.dispatch('setAuthorized')
-            this.$router.push({name: 'Home'});
+            this.request.post('login', {
+                username: this.username,
+                password: this.password
+            }, false).then(response => {
+                if (response.data.data) {
+                    localStorage.setItem('api_token', response.data.data.api_token);
+                    this.$store.dispatch('setAuthorized');
+                    this.isLoading = false;
+                    this.$router.push({name: 'Home'});
+                }
+            }).catch(response => {
+                if (response.response && response.response.status === 401) {
+                    this.isAuthError = true;
+                    this.errorMessage = 'Invalid username or password!';
+                }
+                this.isLoading = false;
+            });
         },
         validate() {
-            return this.username && this.password && this.username == this.authName && this.password == this.authPassword;
+            return this.username && this.password;
         }
     }
 }

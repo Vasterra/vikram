@@ -1,6 +1,6 @@
 export default ({ store, to, from, next }) => {
     
-    if (localStorage.getItem('user_token')) {
+    if (localStorage.getItem('api_token')) {
         next('/');
 
         return false;
