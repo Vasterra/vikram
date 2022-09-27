@@ -73,7 +73,8 @@ export default {
     },
     methods: {
         getResult() {
-            this.requestHelper.get('result').then(response => {
+            this.requestHelper.post('result', this.$store.getters.rfqData)
+            .then(response => {
                 if (response.data) {
                     this.results = response.data;
                 }

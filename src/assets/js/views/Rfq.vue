@@ -156,9 +156,9 @@
                         <div class="poll-content" v-if="step == 5">
                             <h3 class="poll-title">Other requirements</h3>
                             <div class="poll-actions">
-                                <textarea class="poll-textarea" placeholder="Enter text"></textarea>
-                                <div class="poll-images-block" v-if="uploadedImages.length">
-                                    <div class="uploaded-image" v-for="image in uploadedImages" :key="image.src" :style="'background-image: url('+ image.src +')'">
+                                <textarea class="poll-textarea" v-model="otherReqsText" placeholder="Enter text"></textarea>
+                                <div class="poll-images-block" v-if="uploadedImagesData.length">
+                                    <div class="uploaded-image" v-for="image in uploadedImagesData" :key="image.src" :style="'background-image: url('+ image.src +')'">
                                         <div class="uploaded-image-wrap">
                                             <button class="delete-image" @click="deleteUploadedImage(image.src)">
                                                 <img :src="closeIconWhite" alt="">
@@ -166,8 +166,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="poll-files-block" v-if="uploadedFiles.length">
-                                    <div class="uploaded-file" v-for="file in uploadedFiles" :key="file.src">
+                                <div class="poll-files-block" v-if="uploadedFilesData.length">
+                                    <div class="uploaded-file" v-for="file in uploadedFilesData" :key="file.src">
                                         <img :src="uploadedFileIcon" alt="">
                                         <div class="file-info">
                                             <span class="file-name">{{ file.name }}</span>
@@ -251,11 +251,11 @@ export default {
             outputType: null,
             displaySize: null,
             otherReqsText: null,
-            otherReqsImages: [],
-            otherReqsFiles: [],
             isOtherOptionSelected: false,
             uploadedFiles: [],
             uploadedImages: [],
+            uploadedFilesData: [],
+            uploadedImagesData: [],
         }
     },
     mounted() {
@@ -264,6 +264,7 @@ export default {
     methods: {
         stepNext() {
             if (this.step >= this.stepsCount) {
+                this.setRfqData();
                 this.$router.push({name: 'Result'});
                 return false;
             }
@@ -313,6 +314,7 @@ export default {
 
             if (image) {
                 this.uploadedImages.push(image);
+                this.uploadedImagesData.push(this.processUploadedData(image));
             }
         },
         uploadFile(e) {
@@ -320,28 +322,35 @@ export default {
 
             if (file) {
                 this.uploadedFiles.push(file);
+                this.uploadedFilesData.push(this.processUploadedData(file));
             }
         },
         upload(uploadEvent) {
-            if (uploadEvent.target.files && uploadEvent.target.files.length) {
-                let uploadedFile = uploadEvent.target.files[0];
-
-                let newFile = {
-                    name: uploadedFile.name,
-                    size: (uploadedFile.size / 1024 / 1024).toFixed(1),
-                    src: URL.createObjectURL(uploadedFile)
-                };
-
-                return newFile;
+            return uploadEvent.target.files && uploadEvent.target.files.length ? uploadEvent.target.files[0] : false
+        },
+        processUploadedData(file) {
+            return {
+                name: file.name,
+                size: (file.size / 1024 / 1024).toFixed(1),
+                src: URL.createObjectURL(file)
             }
-
-            return false;
         },
         deleteUploadedImage(src) {
             this.uploadedImages = this.uploadedImages.filter(item => item.src != src);
         },
         deleteUploadedFile(src) {
             this.uploadedFiles = this.uploadedFiles.filter(item => item.src != src)
+        },
+        setRfqData() {
+            this.$store.dispatch('setRfqData', {
+                measuring: this.measuring,
+                thermocoupleType: this.thermocoupleType,
+                outputType: this.outputType,
+                displaySize: this.displaySize,
+                otherReqsText: this.otherReqsText,
+                uploadedFiles: this.uploadedFiles,
+                uploadedImages: this.uploadedImages,
+            })
         }
 
     }

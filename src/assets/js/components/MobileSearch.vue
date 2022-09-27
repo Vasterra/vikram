@@ -5,7 +5,7 @@
             <input type="text" class="search-input" placeholder="Search..." v-model="searchValue" @focus="$store.dispatch('showSearchOptions')" @keyup.esc="showSearchOptions = false">
             <img :src="dropdownIcon" alt="">
             <div class="search-options" v-if="showSearchOptions">
-                <div class="search-option" v-for="searchOption in searchOptions" :key="searchOption.id" @click="selectSearchOption(searchOption.name)">{{ searchOption.name }}</div>
+                <div class="search-option" v-for="searchOption in searchOptions" :key="searchOption.id" @click="selectSearchOption(searchOption)">{{ searchOption.name }}</div>
             </div>
         </div>
         <button class="btn search-btn" @click="toQuestions">Get Started</button>
@@ -37,8 +37,9 @@ export default {
         this.getCategories()
     },
     methods: {
-        selectSearchOption(optionValue) {
-            this.searchValue = optionValue;
+        selectSearchOption(searchOption) {
+            this.searchValue = searchOption.name;
+            this.$store.dispatch('setCategoryId', searchOption.id)
             this.$store.dispatch('hideSearchOptions')
         },
         toQuestions() {
