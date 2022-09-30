@@ -73,7 +73,7 @@ export default {
     },
     methods: {
         getResult() {
-            this.requestHelper.post('result', this.$store.getters.rfqData)
+            this.requestHelper.post('result', this.$store.getters.rfqData, true, {headers: {'Content-Type': 'multipart/form-data'}})
             .then(response => {
                 if (response.data) {
                     this.results = response.data;

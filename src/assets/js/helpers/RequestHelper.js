@@ -20,19 +20,19 @@ const RequestHelper = {
 
         return this.request.get(uri)
     },
-    post(uri, params = {}, authotize = true) {
+    post(uri, params = {}, authotize = true, config = {}) {
         if (authotize) {
             params = this.authorizeParams(params);
         }
 
-        return this.request.post(uri, params)
+        return this.request.post(uri, params, config)
     },
-    put(uri, params = {}, authotize = true) {
+    put(uri, params = {}, authotize = true, config = {}) {
         if (authotize) {
             params = this.authorizeParams(params);
         }
 
-        return this.request.put(uri, params)
+        return this.request.put(uri, params, config)
     },
     delete(uri, params = {}, authotize = true) {
         if (authotize) {
