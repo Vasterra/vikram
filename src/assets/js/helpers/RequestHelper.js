@@ -25,11 +25,20 @@ const RequestHelper = {
             params = this.authorizeParams(params);
         }
 
+        if (config.headers && this.hasContentType(config.headers, 'multipart/form-data')) {
+            params = this.makeFormData(params)
+        }
+        console.log(params.getAll('uploadedImages'))
+
         return this.request.post(uri, params, config)
     },
     put(uri, params = {}, authotize = true, config = {}) {
         if (authotize) {
             params = this.authorizeParams(params);
+        }
+
+        if (config.headers && this.hasContentType(config.headers, 'multipart/form-data')) {
+            params = this.makeFormData(params)
         }
 
         return this.request.put(uri, params, config)
@@ -42,6 +51,27 @@ const RequestHelper = {
         uri = uri + '?' + new URLSearchParams(params).toString()
 
         return this.request.delete(uri)
+    },
+    makeFormData(params) {
+        let formData = new FormData();
+
+        for (const [key, value] of Object.entries(params)) {
+            if (Array.isArray(value)) {
+                let index = 0;
+
+                value.forEach(item => {
+                    formData.append(`${key}[${index}]`, item);
+                    index++;
+                })
+            } else {
+                formData.append(key, value)
+            }
+        }
+
+        return formData;
+    },
+    hasContentType(headers, contentType) {
+        return headers['Content-Type'] && headers['Content-Type'] == contentType
     }
 }
 
